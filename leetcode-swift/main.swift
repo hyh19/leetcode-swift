@@ -12,32 +12,33 @@ public class TreeNode {
 }
 
 class Solution {
-    private var nums: [Int] = []
-
-    func balanceBST(_ root: TreeNode?) -> TreeNode? {
-        dfs(root)
-        return sortedArrayToBST(nums, 0, nums.count - 1)
-    }
-
-    // 深度优先搜索，获取中序遍历结果
-    private func dfs(_ root: TreeNode?) {
-        guard let root = root else { return }
-        dfs(root.left)
-        nums.append(root.val)
-        dfs(root.right)
-    }
-
-    // 将有序子数组 nums[lo..hi] 转换为二叉搜索树
-    private func sortedArrayToBST(_ nums: [Int], _ lo: Int, _ hi: Int) -> TreeNode? {
-        if lo > hi {
-            return nil
+    /// 将数组中的元素向右旋转 k 个位置。
+    /// - Parameters:
+    ///   - nums: 一个整型数组的引用，操作将直接在这个数组上进行。
+    ///   - k: 旋转的步数，即将数组的最后 k 个元素移动到数组的前面。
+    /// 数组旋转操作首先对整个数组进行反转，然后分别反转前 k 个元素和剩余的 n-k 个元素。
+    func rotate(_ nums: inout [Int], _ k: Int) {
+        let n = nums.count // 数组的长度
+        let t = k % n // 实际旋转的步数，考虑到 k 可能大于数组长度的情况
+        if t > 0 {
+            reverse(&nums, 0, n - 1) // 先反转整个数组
+            reverse(&nums, 0, t - 1) // 然后反转前 t 个元素
+            reverse(&nums, t, n - 1) // 最后反转剩余的元素
         }
-        let mid = lo + (hi - lo) / 2
-        let root = TreeNode(nums[mid])
-        root.left = sortedArrayToBST(nums, lo, mid - 1)
-        root.right = sortedArrayToBST(nums, mid + 1, hi)
-        return root
+    }
+
+    /// 将数组的一部分进行反转。
+    /// - Parameters:
+    ///   - nums: 一个整型数组的引用，操作将直接在这个数组上进行。
+    ///   - lo: 要反转部分的起始索引。
+    ///   - hi: 要反转部分的结束索引。
+    /// 此方法通过交换两端的元素来反转指定部分的数组，直到中间位置。
+    private func reverse(_ nums: inout [Int], _ lo: Int, _ hi: Int) {
+        var i = lo, j = hi
+        while i < j {
+            nums.swapAt(i, j) // 交换 i 和 j 位置的元素
+            i += 1 // i 向中间移动
+            j -= 1 // j 向中间移动
+        }
     }
 }
-
-// https://leetcode.cn/submissions/detail/384968609/
