@@ -12,40 +12,29 @@ public class TreeNode {
 }
 
 class Solution {
-    /// 计算 Koko 吃完所有香蕉的最小速度
+    /// 移除数组中所有指定的元素，并返回移除后数组的新长度。
     ///
     /// - Parameters:
-    ///   - piles: 一个整数数组，每个元素代表一堆香蕉的数量。
-    ///   - h: 一个整数，表示总时间限制，单位为小时。
-    /// - Returns: 返回 Koko 吃完所有香蕉的最小速度
-    func minEatingSpeed(_ piles: [Int], _ h: Int) -> Int {
-        var lo = 1
-        var hi = piles.max()!
-        var ans = lo
-        while lo <= hi {
-            let mid = lo + (hi - lo) / 2
-            if canFinish(piles, h, mid) {
-                ans = mid
-                hi = mid - 1
-            } else {
-                lo = mid + 1
+    ///   - nums: 一个整数数组的引用，操作将直接在此数组上进行，其中的特定值 `val` 将被移除。此参数为输入输出参数。
+    ///   - val: 需要从数组 `nums` 中移除的值
+    /// - Returns: 移除指定元素后的数组的新长度
+    func removeElement(_ nums: inout [Int], _ val: Int) -> Int {
+        // nums[0..i-1]   != val
+        // nums[i..j]     Scanning
+        // nums[j+1..n-1] == val
+        var i = 0
+        var j = nums.count - 1
+        while i <= j {
+            while i <= j && nums[i] != val {
+                i += 1
+            }
+            while i <= j && nums[j] == val {
+                j -= 1
+            }
+            if i <= j {
+                nums.swapAt(i, j)
             }
         }
-        return ans
-    }
-
-    /// 判断给定速度 k 下，是否能在 h 小时内吃完所有香蕉。
-    ///
-    /// - Parameters:
-    ///   - piles: 一个整数数组，每个元素代表一堆香蕉的数量。
-    ///   - h: 一个整数，表示总时间限制，单位为小时。
-    ///   - k: 一个整数，表示 Koko 每小时吃香蕉的速度。
-    /// - Returns: 如果能在 h 小时内吃完返回 `true`，否则返回 `false`。
-    private func canFinish(_ piles: [Int], _ h: Int, _ k: Int) -> Bool {
-        var hours = 0
-        for p in piles {
-            hours += (p - 1) / k + 1
-        }
-        return hours <= h
+        return i
     }
 }
