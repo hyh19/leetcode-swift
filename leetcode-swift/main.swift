@@ -12,29 +12,38 @@ public class TreeNode {
 }
 
 class Solution {
-    /// 移除数组中所有指定的元素，并返回移除后数组的新长度。
+    /// 计算接雨水的总量
     ///
-    /// - Parameters:
-    ///   - nums: 一个整数数组的引用，操作将直接在此数组上进行，其中的特定值 `val` 将被移除。此参数为输入输出参数。
-    ///   - val: 需要从数组 `nums` 中移除的值
-    /// - Returns: 移除指定元素后的数组的新长度
-    func removeElement(_ nums: inout [Int], _ val: Int) -> Int {
-        // nums[0..i-1]   != val
-        // nums[i..j]     Scanning
-        // nums[j+1..n-1] == val
-        var i = 0
-        var j = nums.count - 1
-        while i <= j {
-            while i <= j && nums[i] != val {
-                i += 1
-            }
-            while i <= j && nums[j] == val {
-                j -= 1
-            }
-            if i <= j {
-                nums.swapAt(i, j)
-            }
+    /// 给定一个整数数组 `height`，其中每个元素代表一个条形块的高度，计算在完全下雨后，能够接多少雨水。
+    /// 实现思路基于动态编程，分别计算每个位置左侧和右侧的最大高度，然后根据每个位置的左右最大高度和当前高度差计算能接的雨水量。
+    ///
+    /// - Parameter height: 一个整数数组，表示每个条形块的高度。
+    /// - Returns: 返回能接的雨水总量
+    func trap(_ height: [Int]) -> Int {
+        let n = height.count
+        if n <= 1 {
+            return 0
         }
-        return i
+
+        // leftMax[i] 表示位置 i 左侧的最大高度，包括 i 本身
+        var leftMax = height
+        for i in 1..<n {
+            leftMax[i] = max(height[i], leftMax[i - 1])
+        }
+
+        // rightMax[i] 表示位置 i 右侧的最大高度，包括 i 本身
+        var rightMax = height
+        for i in stride(from: n - 2, through: 0, by: -1) {
+            rightMax[i] = max(height[i], rightMax[i + 1])
+        }
+
+        // 计算能接的雨水总量
+        var sum = 0
+        for i in 0..<n {
+            // 对于每个位置，能接的雨水量等于它的左侧和右侧最大高度中较小的一个减去当前高度
+            sum += min(leftMax[i], rightMax[i]) - height[i]
+        }
+
+        return sum
     }
 }
