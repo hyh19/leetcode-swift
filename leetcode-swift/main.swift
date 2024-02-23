@@ -12,46 +12,31 @@ public class TreeNode {
 }
 
 class Solution {
-    /// 查找最长回文子串
+    /// 计算并返回数组中最长连续序列的长度。
     ///
-    /// 该方法通过扩展中心的方式来查找回文串，考虑了奇数长度和偶数长度的回文串。
+    /// 通过使用一个集合（Set）来处理数组，首先将所有元素添加到集合中去除重复项。然后遍历数组，对于每个元素，检查其前后是否有连续的数字存在，并同时从集合中移除这些连续的数字以避免重复计算。通过这种方式，可以找到以当前数字为起点的最长连续序列，并更新最长序列的长度。最终返回找到的最长序列长度。
     ///
-    /// - Parameter s: 输入的字符串
-    /// - Returns: `s` 中最长的回文子串
-    func longestPalindrome(_ s: String) -> String {
-        let t = [Character](s)
-        var ans = ""
-        for i in 0..<t.count {
-            // 寻找以 t[i] 为中心的最长回文子串
-            let s1 = expandAroundCenter(t, i, i)
-            if s1.count > ans.count {
-                ans = s1
-            }
-            // 寻找以 t[i] 和 t[i+1] 为中心的最长回文子串
-            let s2 = expandAroundCenter(t, i, i + 1)
-            if s2.count > ans.count {
-                ans = s2
+    /// - Parameter nums: 整数数组，可能包含重复的元素。
+    /// - Returns: 数组中最长连续序列的长度。如果数组为空，则返回 0。
+    func longestConsecutive(_ nums: [Int]) -> Int {
+        var ans = 0
+        var numSet = Set(nums)
+        for x in nums {
+            if numSet.contains(x) {
+                var lo = x - 1
+                while numSet.contains(lo) {
+                    numSet.remove(lo)
+                    lo -= 1
+                }
+                var hi = x + 1
+                while numSet.contains(hi) {
+                    numSet.remove(hi)
+                    hi += 1
+                }
+                ans = max(ans, hi - lo - 1)
+                numSet.remove(x)
             }
         }
         return ans
-    }
-
-    /// 返回字符串 `s` 中以 `s[i]` 和 `s[j]` 为中心的最长回文子串
-    ///
-    /// 该函数尝试从中心向两边扩展，以找到最长的回文子串。它可以处理奇数长度和偶数长度的回文子串。
-    ///
-    /// - Parameters:
-    ///   - s: 字符数组，从原字符串转换得到。
-    ///   - i: 回文中心的左侧索引
-    ///   - j: 回文中心的右侧索引
-    /// - Returns: 以 `s[i]` 和 `s[j]` 为中心的最长回文子串
-    private func expandAroundCenter(_ s: [Character], _ i: Int, _ j: Int) -> String {
-        var i = i, j = j
-        while i >= 0 && j < s.count && s[i] == s[j] {
-            i -= 1
-            j += 1
-        }
-        // 注意：由于退出循环时，i 和 j 分别指向了回文子串外的第一个不匹配的字符，所以需要用 i+1 和 j-1 来截取
-        return String(s[i + 1..<j])
     }
 }
