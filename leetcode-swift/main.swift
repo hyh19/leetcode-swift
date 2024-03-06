@@ -11,36 +11,6 @@ public class TreeNode {
     }
 }
 
-// class Solution {
-//    func lengthOfLongestSubstring(_ s: String) -> Int {
-//        let chs = [Character](s)
-//        var ans = 0
-//        var window = Set<Character>()
-//        // s[left..right) = Window Substring
-//        // s[right..n-1]  = Scanning
-//        var left = 0
-//        var right = 0
-//        while right < chs.count {
-//            let add = chs[right]
-//            if !window.contains(add) {
-//                window.insert(add)
-//                right += 1
-//                ans = max(ans, right - left)
-//            } else {
-//                while left < right {
-//                    let del = chs[left]
-//                    left += 1
-//                    window.remove(del)
-//                    if del == add {
-//                        break
-//                    }
-//                }
-//            }
-//        }
-//        return ans
-//    }
-// }
-
 class Solution {
     /// 查找给定字符串中最长的不含重复字符的子串的长度
     ///
