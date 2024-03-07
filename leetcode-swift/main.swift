@@ -12,45 +12,61 @@ public class TreeNode {
 }
 
 class Solution {
-    /// 查找给定字符串中最长的不含重复字符的子串的长度
+    /// 查找字符串 `s` 中包含字符串 `t` 所有字符的最小窗口子串
     ///
-    /// 本函数使用滑动窗口算法来实现。它维护一个窗口，该窗口内的所有字符都不重复。
-    /// 窗口通过两个指针定义：`left` 和 `right`，其中 `left` 是窗口的开始位置，`right` 是窗口的结束位置。
-    /// 算法逐步扩大窗口（通过移动 `right` 指针）来探索可能的解，并在必要时通过移动 `left` 指针来缩小窗口，
-    /// 以保证窗口内的所有字符都不重复。
-    ///
-    /// - Parameter s: 输入的字符串
-    /// - Returns: 不含重复字符的最长子串的长度
-    ///
-    /// 在遍历字符串的过程中，使用一个集合 `window` 来存储当前窗口内的字符，以快速检查字符是否重复。
-    /// 如果尝试添加到窗口的字符在 `window` 中不存在，说明当前字符不重复，将其加入 `window`，
-    /// 并更新答案 `ans` 为当前窗口的长度。如果字符已存在，则逐个从窗口开始位置移除字符，直到移除了重复的字符，
-    /// 在这个过程中不断调整 `left` 指针。最终，`ans` 中存储的就是最长不含重复字符的子串的长度。
-    func lengthOfLongestSubstring(_ s: String) -> Int {
-        let chs = [Character](s)
-        var ans = 0
-        var window = Set<Character>()
-        // s[left..right) = Window Substring
-        // s[right..n-1]  = Scanning
-        var left = 0
-        var right = 0
-        while right < chs.count {
-            let add = chs[right]
-            if !window.contains(add) {
-                window.insert(add)
-                right += 1
-                ans = max(ans, right - left)
-            } else {
+    /// - Parameters:
+    ///   - s: 被搜索的字符串
+    ///   - t: 需要在 `s` 中查找的目标字符串
+    /// - Returns: `s` 中包含 `t` 的所有字符的最小窗口子串。如果不存在，则返回空字符串。
+    func minWindow(_ s: String, _ t: String) -> String {
+        let sChs = [Character](s) // 将字符串 `s` 转换为字符数组
+        let tChs = [Character](t) // 将字符串 `t` 转换为字符数组
+        
+        var need: [Character: Int] = [:] // `t` 中每个字符及其出现次数的映射
+        for ch in tChs {
+            need[ch] = (need[ch] ?? 0) + 1
+        }
+        
+        // s[left..right) = 窗口内的字符串
+        // s[right..n-1]  = 待遍历的字符串
+        var window: [Character: Int] = [:] // 当前窗口中每个字符及其出现次数的映射
+        var left = 0 // 窗口的左边界
+        var right = 0 // 窗口的右边界
+        
+        var valid = 0 // 当前窗口中满足 `need` 条件的字符种类数量
+        var start = 0 // 最小窗口子串的起始索引
+        var len = Int.max // 最小窗口子串的长度，初始化为最大整数，方便后续比较。
+        
+        // 遍历 `s` 字符串
+        while right < sChs.count {
+            let add = sChs[right] // 将要加入窗口的字符
+            right += 1 // 右移窗口
+            if need[add] != nil { // 如果该字符是 `t` 中需要的字符
+                window[add] = (window[add] ?? 0) + 1 // 更新窗口内字符的计数
+                if window[add] == need[add] { // 如果窗口内该字符的数量满足 `t` 的需求
+                    valid += 1
+                }
+            }
+            // 当窗口完全覆盖 `t` 时，尝试缩小窗口。
+            if valid == need.count {
                 while left < right {
-                    let del = chs[left]
-                    left += 1
-                    window.remove(del)
-                    if del == add {
+                    let del = sChs[left] // 将要从窗口中移除的字符
+                    if need[del] != nil && window[del] == need[del] { // 如果移除后将不再满足条件，则停止缩小窗口。
                         break
                     }
+                    if need[del] != nil { // 如果是需要的字符，则减少窗口内的计数。
+                        window[del]! -= 1
+                    }
+                    left += 1 // 左移窗口。
+                }
+                // 更新最小窗口子串的信息。
+                if right - left < len {
+                    start = left
+                    len = right - left
                 }
             }
         }
-        return ans
+        // 返回最小窗口子串，如果未找到满足条件的子串，则返回空字符串。
+        return len == Int.max ? "" : String(sChs[start ... start + len - 1])
     }
 }
